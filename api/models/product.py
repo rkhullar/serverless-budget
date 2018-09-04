@@ -1,6 +1,6 @@
 from ..tables import product_table
 
-from typing import NamedTuple, Dict
+from typing import NamedTuple, Dict, List
 from decimal import Decimal
 
 
@@ -37,3 +37,9 @@ class Product(NamedTuple):
 
     def delete(self):
         return product_table.delete_item(Key=self.primary_key)
+
+    @staticmethod
+    def read() -> List['Product']:
+        response = product_table.scan()
+        items = response.get('Items', [])
+        return [Product(**item) for item in items]

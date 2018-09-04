@@ -3,6 +3,7 @@ from .order import Order
 
 from boto3.dynamodb.conditions import Key
 from typing import NamedTuple, Dict, List
+from decimal import Decimal
 
 
 class Budget(NamedTuple):
@@ -54,3 +55,16 @@ class Budget(NamedTuple):
         for item in items:
             order = Order(**item)
             order.delete()
+
+    @staticmethod
+    def read() -> List['Budget']:
+        response = budget_table.scan()
+        items = response.get('Items', [])
+        return [Budget(**item) for item in items]
+
+    @property
+    def total(self) -> Decimal:
+        result = Decimal(0)
+        for order in self.orders:
+            result += order.subtotal
+        return result

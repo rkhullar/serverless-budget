@@ -1,7 +1,6 @@
 from ..tables import order_table
-from .budget import Budget
-from .product import Product
 from typing import NamedTuple, Dict
+from decimal import Decimal
 
 
 class Order(NamedTuple):
@@ -69,8 +68,14 @@ class Order(NamedTuple):
 
     @property
     def product(self) -> 'Product':
+        from .product import Product
         return Product.load(self.product_name)
 
     @property
     def budget(self) -> 'Budget':
+        from .budget import Budget
         return Budget.load(self.budget_name)
+
+    @property
+    def subtotal(self) -> Decimal:
+        return self.product.unit_price * self.quantity
